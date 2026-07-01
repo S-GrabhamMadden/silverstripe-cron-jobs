@@ -50,9 +50,10 @@ class SiteUpdateConfig extends DataObject
 
     public static function inst(): SiteUpdateConfig
     {
-        if (! self::$me) {
+        if (!self::$me instanceof \Sunnysideup\CronJobs\Model\SiteUpdateConfig) {
             self::$me = SiteUpdateConfig::get()->first();
         }
+
         return self::$me;
     }
 
@@ -79,6 +80,7 @@ class SiteUpdateConfig extends DataObject
                 )
             );
         }
+
         $outcome = SiteUpdateRecipeBaseClass::can_run_now_based_on_sys_load();
         if ($outcome !== true) {
             $fields->addFieldToTab(
@@ -89,6 +91,7 @@ class SiteUpdateConfig extends DataObject
                 )
             );
         }
+
         $sysLoad = SysLoads::get_sys_load(true);
         $fields->addFieldsToTab(
             'Root.Main',
@@ -123,6 +126,7 @@ class SiteUpdateConfig extends DataObject
                     $alwaysRun[] = $obj->getTitle();
                 }
             }
+
             $stopped->setDescription('The following update recipes always run: ' . implode(', ', $alwaysRun) . '.');
         }
 
@@ -135,7 +139,7 @@ class SiteUpdateConfig extends DataObject
         return is_writable(static::folder_path());
     }
 
-    public function onBeforeWrite()
+    protected function onBeforeWrite()
     {
         parent::onBeforeWrite();
         if (! $this->Title) {
@@ -151,11 +155,12 @@ class SiteUpdateConfig extends DataObject
             $obj = SiteUpdateConfig::create();
             $obj->write();
         }
+
         $folderPath = static::folder_path();
         if (! file_exists($folderPath)) {
             try {
                 mkdir($folderPath);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 //do nothing
             }
         }

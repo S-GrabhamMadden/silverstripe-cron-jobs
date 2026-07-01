@@ -5,7 +5,6 @@ namespace Sunnysideup\CronJobs\Tasks;
 use Sunnysideup\CronJobs\Api\WorkOutWhatToRunNext;
 use Sunnysideup\CronJobs\Model\Logs\Custom\SiteUpdateRunNext;
 use Sunnysideup\CronJobs\Recipes\Entries\CustomRecipe;
-use Sunnysideup\CronJobs\Recipes\SiteUpdateRecipeBaseClass;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\DB;
 use Sunnysideup\CronJobs\Recipes\Entries\CleanUpSiteUpdatesRecipe;
@@ -44,13 +43,12 @@ class SiteUpdateRun extends BuildTask
         DB::query('SET SESSION wait_timeout=1200;');
         $forceRun = false;
         // recipe already set ...
-        if (! $this->recipe) {
-            if ($request->getVar('recipe')) {
-                // get variable
-                $forceRun = true;
-                $this->recipe = (string) $request->getVar('recipe');
-            }
+        if (!$this->recipe && $request->getVar('recipe')) {
+            // get variable
+            $forceRun = true;
+            $this->recipe = (string) $request->getVar('recipe');
         }
+
         if (!$this->recipe) {
             // check if a run next is listed...
             $runNowObj = SiteUpdateRunNext::get()->first();
@@ -61,6 +59,7 @@ class SiteUpdateRun extends BuildTask
                 } else {
                     $this->recipe = $runNowObj->RunnerClassName;
                 }
+
                 $outcome = $this->doTheActualRun($request, true);
                 if ($outcome && $runNowObj) {
                     $runNowObj->delete();
@@ -70,20 +69,20 @@ class SiteUpdateRun extends BuildTask
                 $this->recipe = WorkOutWhatToRunNext::get_next_recipe_to_run(true);
             }
         }
+
         if ($this->recipe) {
             $outcome = $this->doTheActualRun($request, $forceRun);
         }
+
         if ($outcome) {
             echo PHP_EOL . 'RAN: ' . $this->recipe . PHP_EOL;
+        } elseif ($this->cleanupAttempt < 3 && $this->recipe !== CleanUpSiteUpdatesRecipe::class) {
+            $this->cleanupAttempt++;
+            $this->recipe = CleanUpSiteUpdatesRecipe::class;
+            echo PHP_EOL . 'RETRYING WITH: ' . $this->recipe . PHP_EOL;
+            $this->doTheActualRun($request, $forceRun);
         } else {
-            if ($this->cleanupAttempt < 3 && $this->recipe !== CleanUpSiteUpdatesRecipe::class) {
-                $this->cleanupAttempt++;
-                $this->recipe = CleanUpSiteUpdatesRecipe::class;
-                echo PHP_EOL . 'RETRYING WITH: ' . $this->recipe . PHP_EOL;
-                $this->doTheActualRun($request, $forceRun);
-            } else {
-                echo PHP_EOL . 'NOTHING HAS BEEN RUN' .  PHP_EOL;
-            }
+            echo PHP_EOL . 'NOTHING HAS BEEN RUN' .  PHP_EOL;
         }
     }
 
@@ -93,16 +92,19 @@ class SiteUpdateRun extends BuildTask
             DB::alteration_message('Could not find Recipe, using CustomRecipe!', 'deleted');
             $this->recipe = CustomRecipe::class;
         }
+
         $className = $this->recipe;
         $obj = $className::inst();
         if ($obj) {
             if ($forceRun) {
                 $obj->setIgnoreAll(true);
             }
+
             return $obj->run($request);
         } else {
             user_error('Could not inst() class ' . $this->recipe);
         }
+
         return false;
     }
 }

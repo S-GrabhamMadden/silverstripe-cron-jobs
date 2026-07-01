@@ -3,7 +3,6 @@
 namespace Sunnysideup\CronJobs\Tasks;
 
 use SilverStripe\Core\Injector\Injector;
-use Sunnysideup\CronJobs\Traits\LogSuccessAndErrorsTrait;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\DB;
 use Sunnysideup\CronJobs\Model\Logs\SiteUpdate;

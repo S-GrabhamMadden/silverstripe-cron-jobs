@@ -2,7 +2,6 @@
 
 namespace Sunnysideup\CronJobs\Tasks;
 
-use Sunnysideup\CronJobs\Traits\LogSuccessAndErrorsTrait;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\DB;
 

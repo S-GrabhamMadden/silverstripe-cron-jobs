@@ -14,6 +14,7 @@ class SiteUpdateDropdownField extends DropdownField
         foreach ($recipes as $className => $recipe) {
             $list[$className] = $recipe->getTitle();
         }
+
         asort($list);
         $list = array_merge(['' => '(Any)'], $list);
         return $list;

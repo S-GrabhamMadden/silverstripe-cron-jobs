@@ -12,7 +12,6 @@ use SilverStripe\Forms\GridField\GridFieldDataColumns;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\ArrayList;
 use Sunnysideup\CronJobs\Api\SiteUpdatesToGraph;
-use Sunnysideup\CronJobs\Api\WorkOutWhatToRunNext;
 use Sunnysideup\CronJobs\Control\SiteUpdateController;
 use Sunnysideup\CronJobs\Forms\CustomGridFieldDataColumns;
 use Sunnysideup\CronJobs\Model\Logs\Notes\SiteUpdateNote;
@@ -38,7 +37,7 @@ class SiteUpdatesAdmin extends ModelAdmin
 
     private static $menu_title = 'Site Updates';
 
-    public function init()
+    protected function init()
     {
         parent::init();
         $this->showImportForm = false;
@@ -56,8 +55,9 @@ class SiteUpdatesAdmin extends ModelAdmin
             $config->removeComponentsByType(GridFieldDataColumns::class);
 
             // Add the custom GridFieldDataColumns
-            $config->addComponent(new CustomGridFieldDataColumns());
+            $config->addComponent(CustomGridFieldDataColumns::create());
         }
+
         if ($this->modelClass === SiteUpdateConfig::class) {
             $fields = $form->Fields();
 
@@ -84,6 +84,7 @@ class SiteUpdatesAdmin extends ModelAdmin
                 )
             );
         }
+
         return $form;
     }
 

@@ -71,6 +71,7 @@ class SiteUpdateRunNext extends DataObject
         } else {
             $link = '<p>Run the following command from the command line: <pre>vendor/bin/sake dev/tasks/site-update-run</pre></p>';
         }
+
         $fields->addFieldsToTab(
             'Root.Main',
             [
@@ -100,6 +101,7 @@ class SiteUpdateRunNext extends DataObject
         if (! $object) {
             return 'ERROR: RunnerClassName not found';
         }
+
         return $object->getTitle();
     }
 
@@ -109,6 +111,7 @@ class SiteUpdateRunNext extends DataObject
         if (! $object) {
             return 'ERROR: RunnerClassName not found';
         }
+
         return $object->getDescription();
     }
 
@@ -118,6 +121,7 @@ class SiteUpdateRunNext extends DataObject
         if ($className && class_exists((string) $className)) {
             return $className::inst();
         }
+
         return null;
     }
 

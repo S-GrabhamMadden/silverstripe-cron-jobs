@@ -2,11 +2,7 @@
 
 namespace Sunnysideup\CronJobs\Recipes\Entries;
 
-use Sunnysideup\CronJobs\Model\Logs\Custom\SiteUpdateRunNext;
 use Sunnysideup\CronJobs\Recipes\SiteUpdateRecipeBaseClass;
-use Sunnysideup\CronJobs\RecipeSteps\SiteUpdateRecipeStepBaseClass;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\ORM\DataList;
 use Sunnysideup\CronJobs\RecipeSteps\Finalise\CleanUpSiteUpdatesStep;
 
 class CleanUpSiteUpdatesRecipe extends SiteUpdateRecipeBaseClass

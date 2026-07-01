@@ -14,6 +14,7 @@ class SiteUpdateStepDropdownField extends DropdownField
         foreach ($steps as $className => $step) {
             $list[$className] = $step->getTitle();
         }
+
         asort($list);
         $list = array_merge(['' => '(Any)'], $list);
         return $list;
